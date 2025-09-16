@@ -17,7 +17,13 @@ const userRoutes = require("./routes/user");
 const luckyDrawRoutes = require("./routes/luckydraw");
 
 
-
+app.get("/", (req, res) => {
+  res.send({
+    message: "API is running...",
+    activeStatus: "success",
+    error : false
+  });
+});
 // use routes
 app.use("/api/payment", paymentRoutes);
 app.use("/api/admin", adminRoutes);
