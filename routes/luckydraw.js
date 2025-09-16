@@ -14,7 +14,6 @@ router.post("/join", async (req, res) => {
     // Create user
     const user = await User.create({ name, email, phone, gender, address, terms });
     
-    
     // Get current lucky draw
     let luckyDraw = await LuckyDraw.findOne();
 
