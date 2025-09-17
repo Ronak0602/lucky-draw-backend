@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+require('dotenv').config();
 
 // Create app
 const app = express();
@@ -29,7 +30,7 @@ app.use("/api/luckydraw", luckyDrawRoutes);
 // Serverless-friendly MongoDB connection
 let cached = global.mongoose;
 if (!cached) cached = global.mongoose = { conn: null, promise: null };
-
+// Yqq9CBXBCpmsu4bH
 
 console.log("MONGO_URI:", process.env.MONGO_URI); // Debugging line
 async function connectDB() {
