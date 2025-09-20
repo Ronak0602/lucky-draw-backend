@@ -7,6 +7,8 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 app.use(cors({ origin: "*" })); // allow all origins
+app.use('/uploads', express.static('uploads'));
+
 
 // Routes import
 const paymentRoutes = require("./routes/payment");
@@ -49,3 +51,10 @@ connectDB().then(() => console.log("MongoDB connected"))
 
 // Export app for Vercel serverless
 module.exports = app;
+
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});

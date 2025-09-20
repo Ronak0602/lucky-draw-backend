@@ -18,7 +18,8 @@ const userSchema = new mongoose.Schema({
     address: { type: String, required: true },                                    // Added address
     terms: { type: Boolean, required: true, validate: v => v === true },
     hasPaid: { type: Boolean, default: false }, // 1 rupiya diya ya nahi
-    transactionId: { type: String, default: "" } // baad me Razorpay ya dummy
+    transactionId: { type: String, default: "" }, // baad me Razorpay ya dummy
+    paymentProof: { type: String, default: "" } 
 }, { timestamps: true });
 
 module.exports = mongoose.model("User", userSchema);
