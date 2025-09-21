@@ -4,6 +4,7 @@ const User = require("../models/user");
 const LuckyDraw = require("../models/LuckyDraw");
 
 router.post("/join", async (req, res) => {
+  console.log("Join request received with body:", req.body);
   try {
     const { name, email, phone, gender, address, terms } = req.body;
 
