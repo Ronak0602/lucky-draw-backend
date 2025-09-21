@@ -24,6 +24,7 @@ const upload = multer({ storage: storage });
 router.post("/upload-proof/:userId", upload.single("paymentProof"), async (req, res) => {
   try {
     const { userId } = req.params;
+    console.log("User ID from request:", userId); 
     const file = req.file;
 
     if (!file) {
@@ -31,9 +32,15 @@ router.post("/upload-proof/:userId", upload.single("paymentProof"), async (req, 
     }
 
     const user = await User.findById(userId);
+    console.log(user); 
+
     if (!user) return res.status(404).json({ msg: "User not found" });
 
-    user.hasPaid = true;
+    if (!user.hasPaid) {
+      return res.status(400).json({ msg: "User has not made the payment yet" });
+    }
+
+    // user.hasPaid = true;
     user.paymentProof = file.path; // save proof file path
     user.transactionId = "TXN_" + Date.now();
 
