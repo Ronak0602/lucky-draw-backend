@@ -14,11 +14,11 @@ const userSchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid 10 digit phone number!`
         }
     },
-    gender: { type: String, enum: ["Male", "Female", "Other"], required: true },  // Added gender
-    address: { type: String, required: true },                                    // Added address
+    gender: { type: String, enum: ["Male", "Female", "Other"], required: true }, 
+    address: { type: String, required: true },                                   
     terms: { type: Boolean, required: true, validate: v => v === true },
-    hasPaid: { type: Boolean, default: false }, // 1 rupiya diya ya nahi
-    transactionId: { type: String, default: "" }, // baad me Razorpay ya dummy
+    hasPaid: { type: Boolean, default: false }, 
+    transactionId: { type: String, default: "" }, 
     paymentProof: { type: String, default: "" } 
 }, { timestamps: true });
 
