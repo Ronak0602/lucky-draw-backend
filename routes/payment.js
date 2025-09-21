@@ -1,54 +1,33 @@
 const express = require("express");
 const router = express.Router();
-const multer = require("multer");
-const path = require("path");
 const User = require("../models/user");
 
 router.get("/", (req, res) => {
   res.send("Payment Route Working ✅");
 });
 
-// multer setup for proof upload
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "uploads/payments/");
-  },
-  filename: (req, file, cb) => {
-    const ext = path.extname(file.originalname);
-    cb(null, `proof-${Date.now()}${ext}`);
-  },
-});
-const upload = multer({ storage: storage });
-
-// POST /payment/upload-proof/:userId
-router.post("/upload-proof/:userId", upload.single("paymentProof"), async (req, res) => {
+// POST /payment/confirm-payment/:userId
+router.post("/confirm-utr/:userId", async (req, res) => {
+  console.log("Confirm UTR route hit with userId:", req.params.userId);
   try {
     const { userId } = req.params;
-    console.log("User ID from request:", userId); 
-    const file = req.file;
+    const { utrId } = req.body;
 
-    if (!file) {
-      return res.status(400).json({ msg: "Payment proof file is required" });
+    if (!utrId) {
+      return res.status(400).json({ msg: "UTR ID is required" });
     }
 
     const user = await User.findById(userId);
-    console.log(user); 
-
     if (!user) return res.status(404).json({ msg: "User not found" });
 
-    if (!user.hasPaid) {
-      return res.status(400).json({ msg: "User has not made the payment yet" });
-    }
-
-    // user.hasPaid = true;
-    user.paymentProof = file.path; // save proof file path
-    user.transactionId = "TXN_" + Date.now();
+    user.transactionId = utrId;
+    user.hasPaid = true;
 
     await user.save();
 
-    res.json({ msg: "Payment updated with proof successfully", user });
+    res.json({ msg: "Congratulations! You have joined the contest.", user });
   } catch (error) {
-    res.status(500).json({ msg: "Error uploading proof", error: error.message });
+    res.status(500).json({ msg: "Error confirming payment", error: error.message });
   }
 });
 
