@@ -6,7 +6,8 @@ require('dotenv').config();
 // Create app
 const app = express();
 app.use(express.json());
-app.use(cors({ origin: "*" })); // allow all origins
+app.use(cors({ origin: "*" }));
+app.options("*", cors());
 app.use('/uploads', express.static('uploads'));
 
 
