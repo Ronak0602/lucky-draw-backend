@@ -38,8 +38,12 @@ console.log("MONGO_URI:", process.env.MONGO_URI); // Debugging line
 async function connectDB() {
   if (cached.conn) return cached.conn;
   if (!cached.promise) {
-    cached.promise = mongoose.connect(process.env.MONGO_URI)
-      .then(mongoose => mongoose);
+    cached.promise = mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 30000,  // Increase timeout to 30 seconds
+    })
+    .then(mongoose => mongoose);
   }
   cached.conn = await cached.promise;
   return cached.conn;
@@ -47,7 +51,7 @@ async function connectDB() {
 
 // Connect DB once at startup (optional for serverless, can call in each route)
 connectDB().then(() => console.log("MongoDB connected"))
-           .catch(err => console.error("MongoDB connection error:", err));
+  .catch(err => console.error("MongoDB connection error:", err));
 
 // Export app for Vercel serverless
 module.exports = app;
