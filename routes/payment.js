@@ -41,8 +41,8 @@ router.post("/create-cashfree-order", async (req, res) => {
       {
         headers: {
           "Content-Type": "application/json",
-          "CASHFREE_APP_ID": process.env.CASHFREE_APP_ID,
-          "CASHFREE_SECRET_KEY": process.env.CASHFREE_SECRET_KEY,
+          "x-client-id": process.env.CASHFREE_APP_ID,
+          "x-client-secret": process.env.CASHFREE_SECRET_KEY,
         },
       }
     );
