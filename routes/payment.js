@@ -13,21 +13,41 @@ router.post("/create-cashfree-order", async (req, res) => {
   const {
     order_id,
     order_amount,
-    customer_name,
-    customer_email,
-    customer_phone
+    order_currency,
+    customer_details
   } = req.body;
 
-  if (!order_id || !order_amount || !customer_email || !customer_phone) {
+  console.log("order_id:", order_id);
+  console.log("order_amount:", order_amount);
+  console.log("customer_details:", customer_details);
+
+  if (!order_id || !order_amount || !customer_details) {
     return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  const {
+    customer_id,
+    customer_email,
+    customer_phone,
+    customer_name
+  } = customer_details;
+
+  
+  console.log("customer_id:", customer_id);
+  console.log("customer_email:", customer_email);
+  console.log("customer_phone:", customer_phone);
+  console.log("customer_name:", customer_name);
+
+  if (!customer_id || !customer_email || !customer_phone || !customer_name) {
+    return res.status(400).json({ error: "Missing customer details" });
   }
 
   const payload = {
     order_id,
-    order_amount,
-    order_currency: "INR",
+    order_amount: order_amount.toString(),
+    order_currency: order_currency || "INR",
     customer_details: {
-      customer_id: customer_email,
+      customer_id, 
       customer_email,
       customer_phone,
       customer_name,
@@ -43,6 +63,7 @@ router.post("/create-cashfree-order", async (req, res) => {
           "Content-Type": "application/json",
           "x-client-id": process.env.CASHFREE_APP_ID,
           "x-client-secret": process.env.CASHFREE_SECRET_KEY,
+          "x-api-version": "2022-09-01"
         },
       }
     );
