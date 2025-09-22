@@ -32,7 +32,7 @@ router.post("/create-cashfree-order", async (req, res) => {
     customer_name
   } = customer_details;
 
-  
+
   console.log("customer_id:", customer_id);
   console.log("customer_email:", customer_email);
   console.log("customer_phone:", customer_phone);
@@ -47,7 +47,7 @@ router.post("/create-cashfree-order", async (req, res) => {
     order_amount: order_amount.toString(),
     order_currency: order_currency || "INR",
     customer_details: {
-      customer_id, 
+      customer_id,
       customer_email,
       customer_phone,
       customer_name,
@@ -77,5 +77,35 @@ router.post("/create-cashfree-order", async (req, res) => {
     });
   }
 });
+
+// ✅ Verify Payment & Update User Status
+router.post("/verify-payment", async (req, res) => {
+  const { userId, paymentStatus, transactionId, paymentProof } = req.body;
+
+  try {
+    // Find user by ID
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ msg: "User not found" });
+    }
+
+    // If payment was successful
+    if (paymentStatus === "success") {
+      // Update user to show payment status
+      user.hasPaid = true;
+      user.transactionId = transactionId || "";  // Store transaction ID
+      user.paymentProof = paymentProof || "";   // Store payment proof (if any)
+    }
+
+    // Save the updated user document
+    await user.save();
+
+    res.status(200).json({ msg: "Payment verified and user updated", user });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ msg: "Error verifying payment", error: err.message });
+  }
+});
+
 
 module.exports = router;

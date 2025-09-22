@@ -14,8 +14,8 @@ router.post("/register", async (req, res) => {
     const newUser = new User({
       name,
       phone,
-      hasPaid: true, 
-      transactionId: "DUMMY_" + Date.now() 
+      hasPaid: false, 
+      transactionId: ""
     });
 
     await newUser.save();
