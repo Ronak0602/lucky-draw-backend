@@ -41,15 +41,15 @@ router.post("/create-cashfree-order", async (req, res) => {
       {
         headers: {
           "Content-Type": "application/json",
-          "x-client-id": process.env.CASHFREE_APP_ID,
-          "x-client-secret": process.env.CASHFREE_SECRET_KEY,
+          "CASHFREE_APP_ID": process.env.CASHFREE_APP_ID,
+          "CASHFREE_SECRET_KEY": process.env.CASHFREE_SECRET_KEY,
         },
       }
     );
-
+       console.log("Cashfree response:", response.data); 
     res.status(200).json(response.data);
   } catch (error) {
-    console.error("❌ Cashfree Error:", error?.response?.data || error.message);
+    console.error(" Cashfree Error:", error?.response?.data || error.message);
     res.status(500).json({ error: "Cashfree order creation failed" });
   }
 });
