@@ -1,74 +1,57 @@
 const express = require("express");
 const router = express.Router();
-const User = require("../models/user");
-const Razorpay = require('razorpay');
-const crypto = require('crypto');
-
+const axios = require("axios");
 require("dotenv").config();
 
-const razorpay = new Razorpay({
-  key_id: process.env.RAZORPAY_KEY_ID,
-  key_secret: process.env.RAZORPAY_KEY_SECRET,
-});
-
+// ✅ Route Check
 router.get("/", (req, res) => {
-  res.send("Payment Route Working ✅");
+  res.send("✅ Cashfree Payment Route Working");
 });
 
+// ✅ Create Cashfree Order
+router.post("/create-cashfree-order", async (req, res) => {
+  const {
+    order_id,
+    order_amount,
+    customer_name,
+    customer_email,
+    customer_phone
+  } = req.body;
 
-router.post("/create-order", async (req, res) => {
-  const { amount } = req.body;
-
-  if (!amount) {
-    return res.status(400).json({ msg: "Amount is required" });
+  if (!order_id || !order_amount || !customer_email || !customer_phone) {
+    return res.status(400).json({ error: "Missing required fields" });
   }
 
-  const options = {
-    amount: amount * 100, // in paise
-    currency: "INR",
-    receipt: `receipt_order_${Date.now()}`,
+  const payload = {
+    order_id,
+    order_amount,
+    order_currency: "INR",
+    customer_details: {
+      customer_id: customer_email,
+      customer_email,
+      customer_phone,
+      customer_name,
+    },
   };
 
   try {
-    const order = await razorpay.orders.create(options);
-    res.status(200).json({ success: true, order });
-  } catch (err) {
-    res.status(500).json({ msg: "Error creating Razorpay order", error: err.message });
+    const response = await axios.post(
+      `${process.env.CASHFREE_BASE_URL}/pg/orders`,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          "x-client-id": process.env.CASHFREE_APP_ID,
+          "x-client-secret": process.env.CASHFREE_SECRET_KEY,
+        },
+      }
+    );
+
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error("❌ Cashfree Error:", error?.response?.data || error.message);
+    res.status(500).json({ error: "Cashfree order creation failed" });
   }
 });
-
-  router.post("/verify", async (req, res) => {
-  const {
-    razorpay_order_id,
-    razorpay_payment_id,
-    razorpay_signature,
-    userId,
-  } = req.body;
-
-  const body = razorpay_order_id + "|" + razorpay_payment_id;
-
-  const expectedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET)
-    .update(body)
-    .digest("hex");
-
-  if (expectedSignature === razorpay_signature) {
-    try {
-      const user = await User.findById(userId);
-      if (!user) return res.status(404).json({ msg: "User not found" });
-
-      user.hasPaid = true;
-      user.transactionId = razorpay_payment_id;
-      await user.save();
-
-      res.status(200).json({ success: true, msg: "Payment verified", user });
-    } catch (err) {
-      res.status(500).json({ msg: "Error saving payment", error: err.message });
-    }
-  } else {
-    res.status(400).json({ success: false, msg: "Invalid signature" });
-  }
-});
-
 
 module.exports = router;
