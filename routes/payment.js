@@ -46,11 +46,17 @@ router.post("/create-cashfree-order", async (req, res) => {
         },
       }
     );
-       console.log("Cashfree response:", response.data); 
+    console.log("Cashfree response:", response.data);
     res.status(200).json(response.data);
   } catch (error) {
     console.error(" Cashfree Error:", error?.response?.data || error.message);
-    res.status(500).json({ error: "Cashfree order creation failed" });
+    res.status(500).json({
+      error: "Cashfree order creation failed",
+      details: error?.response?.data || error.message,
+
+
+    });
+
   }
 });
 
