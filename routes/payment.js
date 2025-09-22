@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const axios = require("axios");
 require("dotenv").config();
+const User = require("../models/user");
 
 // ✅ Route Check
 router.get("/", (req, res) => {
@@ -91,10 +92,9 @@ router.post("/verify-payment", async (req, res) => {
 
     // If payment was successful
     if (paymentStatus === "success") {
-      // Update user to show payment status
       user.hasPaid = true;
-      user.transactionId = transactionId || "";  // Store transaction ID
-      user.paymentProof = paymentProof || "";   // Store payment proof (if any)
+      user.transactionId = transactionId || ""; 
+      user.paymentProof = paymentProof || "";   
     }
 
     // Save the updated user document
