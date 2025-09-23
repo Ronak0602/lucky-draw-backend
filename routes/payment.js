@@ -53,7 +53,13 @@ router.post("/create-cashfree-order", async (req, res) => {
       customer_phone,
       customer_name,
     },
+    payment_method: {
+      upi: {
+        mode: "collect" 
+      }
+    }
   };
+
 
   try {
     const response = await axios.post(
@@ -93,8 +99,8 @@ router.post("/verify-payment", async (req, res) => {
     // If payment was successful
     if (paymentStatus === "success") {
       user.hasPaid = true;
-      user.transactionId = transactionId || ""; 
-      user.paymentProof = paymentProof || "";   
+      user.transactionId = transactionId || "";
+      user.paymentProof = paymentProof || "";
     }
 
     // Save the updated user document
